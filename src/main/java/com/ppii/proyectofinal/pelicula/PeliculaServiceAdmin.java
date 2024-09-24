@@ -23,8 +23,6 @@ public class PeliculaServiceAdmin implements ServiceInterface {
 	
 	private static final String DIR_PATH = "C:/Users/Bangho/EPP/ProyectoFinal/proyecto-final/public/pelicula/";
 	
-	//private static final String DIR_PATH = System.getProperty("user.dir").replace("\\", "/") + "/public/img/";
-	
 	private static final String NOT_FOUND = "NOTFOUND.jpg";
 	
 	@Autowired

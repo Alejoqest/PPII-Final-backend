@@ -14,7 +14,7 @@ public class RecursoInsuficienteExcepcion extends RuntimeException {
 	private String valorSuficiente;
 
 	public RecursoInsuficienteExcepcion(String campoNombre, String campoValor, String operacion, String valorSuficiente) {
-		super(String.format("El valor de %s es $s y debe ser %s a %s.", campoNombre, campoValor, operacion, valorSuficiente));
+		super(String.format("El valor de %s es %s y debe ser %s a %s.", campoNombre, campoValor, operacion, valorSuficiente));
 		this.campoNombre = campoNombre;
 		this.campoValor = campoValor;
 		this.operacion = operacion;

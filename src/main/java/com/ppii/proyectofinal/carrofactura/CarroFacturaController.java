@@ -60,9 +60,9 @@ public class CarroFacturaController {
 	}
 	
 	@PutMapping(value = "carro/actualizar")
-	public ResponseEntity<CarroComprasDTO> setCarroElementos(Principal principal, @RequestBody ElementoCarro elemento) {
+	public ResponseEntity<CarroComprasDTO> setCarroElementos(Principal principal, @RequestBody ElementoCarroDTO elemento) {
 		Usuario usuario = userServicio.cargarUsuarioPorEmail(principal.getName());
-		CarroCompras carro = carServicio.modificarCarro(usuario.getCarro(), elemento);
+		CarroCompras carro = carServicio.modificarCarro(usuario.getCarro(), mapper.DTOaElementoCarro(elemento));
 		return ResponseEntity.ok(mapper.aCarroComprasDTO(carro));
 	}
 	
@@ -77,13 +77,13 @@ public class CarroFacturaController {
 	public ResponseEntity<CarroComprasDTO> postFacturaCarro(Principal principal) {
 		Usuario usuario = userServicio.cargarUsuarioPorEmail(principal.getName());
 		CarroCompras carro = usuario.getCarro();
-		carro = carServicio.guardarFacturaDesdeCarro(mapper.aFactura(carro), carro, usuario.getEmail());
+		carro = carServicio.guardarFacturaDesdeCarro(mapper.aFactura(carro), carro, usuario);
 		return ResponseEntity.status(HttpStatus.CREATED).body(mapper.aCarroComprasDTO(carro));
 	}
 	
 	@PostMapping(value = "facturas/nueva")
 	public ResponseEntity<FacturaDTO> postFactura(Principal principal, @RequestBody Factura factura) {
-		factura = carServicio.guardarFactura(factura, principal.getName());
+		factura = carServicio.guardarFactura(factura, userServicio.cargarUsuarioPorEmail(principal.getName()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(mapper.aFacturaDTO(factura));
 	}
 	

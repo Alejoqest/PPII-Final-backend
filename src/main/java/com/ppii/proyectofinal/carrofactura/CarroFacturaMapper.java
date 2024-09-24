@@ -93,4 +93,23 @@ public class CarroFacturaMapper {
 				.subTotal(e.getSubTotal())
 				.build();
 	}
+	
+	public ElementoCarro DTOaElementoCarro(ElementoCarroDTO e) {
+		ElementoCarro elemento = ElementoCarro.builder()
+				.unidades(e.getUnidades())
+				.subTotal(e.getSubTotal())
+				.build();
+		
+		Pelicula pelicula = Pelicula.builder()
+				.id(e.getPeliculaId())
+				.nombre(e.getPeliculaNombre())
+				.formato(e.getPeliculaFormato())
+				.build();
+		
+		pelicula.setCategorias(null);
+		
+		elemento.setPelicula(pelicula);
+		
+		return elemento;
+	}
 }

@@ -25,16 +25,8 @@ import com.ppii.proyectofinal.categoria.Categoria;
  */
 @Service
 public class PeliculaService {
-	
-	//private static final String DIR_PATH = System.getProperty("user.dir") + "/public/img/";
-	
-	//private static final String NOT_FOUND = "NOTFOUND.jpg";
-	
 	@Autowired
 	private PeliculaRepository pRepo;
-	
-	/*@Autowired
-	private CategoriaRepository cRepo;*/
 	
 	/**
 	 * 
@@ -53,10 +45,6 @@ public class PeliculaService {
 	public Page<Pelicula> cargarPaginaPelicula(int pagina) {
 		Pageable paginaMuestra = PageRequest.of(pagina - 1, 16);
 		return pRepo.findAll(paginaMuestra);
-	}
-	
-	public List<Pelicula> obtenerPaginaPeliculaCategoria(int numPag, Long categoriaId) {
-		return null;
 	}
 	
 	public List<Pelicula> obtenerPaginaPeliculasParametrada(int numPag, String nombre, FormatoPelicula formato,
@@ -95,7 +83,13 @@ public class PeliculaService {
 			 Long categoriaId, boolean sinStock) {
 		int stock = (sinStock)? 0 : 1;
 		
-		return pRepo.countByNombreContainingAndStockGreaterThanEqualAndFormatoAndCategoriasId(nombre, stock, formato, categoriaId);
+		boolean param = (formato != null && categoriaId != null);
+
+		if (param) return pRepo.countByStockGreaterThanEqualAndNombreIgnoreCaseContainingAndFormatoAndCategoriasId(stock, nombre, formato, categoriaId);
+		
+		return (formato == null && categoriaId == null)? pRepo.countByStockGreaterThanEqualAndNombreIgnoreCaseContaining(stock, nombre) : 
+			(formato != null && categoriaId == null)? pRepo.countByStockGreaterThanEqualAndNombreIgnoreCaseContainingAndFormato(stock, nombre, formato) :
+				pRepo.countByStockGreaterThanEqualAndNombreIgnoreCaseContainingAndCategoriasId(stock, nombre, categoriaId);
 	}
 	
 	public Pelicula cargarPeliculaPorNombre(String nombre, FormatoPelicula formato) {

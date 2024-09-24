@@ -64,16 +64,16 @@ public class AuthController {
 	
 	@PreAuthorize("isAuthenticated()") 
 	@GetMapping("cuenta")
-	public UsuarioBusquedaDTO getUsuarioPrincipalBusqueda(Principal principal) {
+	public ResponseEntity<UsuarioBusquedaDTO> getUsuarioPrincipalBusqueda(Principal principal) {
 		Usuario usuario = service.cargarUsuarioPorEmail(principal.getName());
-		return mapper.aBusqueda(usuario);
+		return ResponseEntity.ok(mapper.aBusqueda(usuario));
 	}
 	
 	@PreAuthorize("isAuthenticated()") 
 	@GetMapping("cuenta/detalles")
-	public UsuarioDatosDTO getUsuarioPrincipalDetalles(Principal principal) {
+	public ResponseEntity<UsuarioDatosDTO> getUsuarioPrincipalDetalles(Principal principal) {
 		Usuario usuario = service.cargarUsuarioPorEmail(principal.getName());
-		return mapper.aDatosSinContraseña(usuario);
+		return ResponseEntity.ok(mapper.aDatosSinContraseña(usuario));
 	}
 	
 	@PreAuthorize("isAuthenticated()") 

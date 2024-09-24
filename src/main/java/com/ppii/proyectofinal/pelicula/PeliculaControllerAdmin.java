@@ -20,7 +20,6 @@ import com.ppii.proyectofinal.pelicula.dto.PeliculaCreacionDTO;
 @PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("api/v1/pelicula/admin")
 public class PeliculaControllerAdmin {
-	
 	@Autowired
 	private PeliculaMapper mapper;
 	@Autowired

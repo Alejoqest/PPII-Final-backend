@@ -1,58 +1,46 @@
 package com.ppii.proyectofinal.pelicula;
 
-//import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.prepost.PreAuthorize;
-//import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-//import org.springframework.web.multipart.MultipartFile;
 
 import com.ppii.proyectofinal.categoria.Categoria;
 import com.ppii.proyectofinal.pelicula.dto.PeliculaBusquedaDTO;
-//import com.ppii.proyectofinal.pelicula.dto.PeliculaCreacionDTO;
 import com.ppii.proyectofinal.pelicula.dto.PeliculaDetallesDTO;
 
 @RestController
-@RequestMapping("api/v1/pelicula")
+@RequestMapping("api/v1/pelicula/mostrar/")
 public class PeliculaController {
-	
-	private static final String mostrarURL = "/mostrar/";
-	
 	@Autowired
 	private PeliculaMapper mapper;
 	
 	@Autowired
 	private PeliculaService service;
 	
-	@GetMapping(mostrarURL+"lista")
+	@GetMapping("lista")
 	public List<PeliculaBusquedaDTO> getAllPeliculas() {
 		return service.cargarPeliculas().stream()
 				.map(p -> mapper.toBusqueda(p))
 				.collect(Collectors.toList());
 	}
 	
-	@GetMapping("/pagina/{numero}")
+	/*@GetMapping("/pagina/{numero}")
 	public List<PeliculaBusquedaDTO> getPaginaPeliculas(@PathVariable int numero) {
 		if (numero == 0) {
 			return List.of();
 		}
 		Page<PeliculaBusquedaDTO> peliculas = service.cargarPaginaPelicula(numero).map(p -> mapper.toBusqueda(p));
 		return peliculas.get().toList();
-	}
+	}*/
 	
-	@GetMapping(mostrarURL)
+	@GetMapping
 	public List<PeliculaBusquedaDTO> getPeliculasSegunParam(
 			@RequestParam int numPag,
 			@RequestParam(required = false, defaultValue = "") String nombre,
@@ -73,21 +61,33 @@ public class PeliculaController {
 					.toList();
 	}
 	
-	@GetMapping(mostrarURL+"{id}")
+	@GetMapping("contar")
+	public ResponseEntity<Cantidad> getPeliculaCount(
+			@RequestParam(required = false, defaultValue = "") String nombre, 
+			@RequestParam(required = false) FormatoPelicula formato, 
+			@RequestParam(required = false) Long categoriaId, 
+			@RequestParam(required = false) boolean sinStock) {
+		long count = service.contarResultados(nombre, formato, categoriaId, sinStock);
+		return ResponseEntity.ok(new Cantidad(count));
+	}
+	
+	@GetMapping("{id}")
 	public PeliculaDetallesDTO getPeliculaDatos(@PathVariable Long id) {
 		Pelicula pelicula = this.service.cargarPelicula(id);
 		return this.mapper.toDetalles(pelicula);
 	}
 	
-	@GetMapping(mostrarURL+"{id}/categorias")
+	@GetMapping("{id}/categorias")
 	public List<Categoria> getCategorias(@PathVariable Long id) {
 		return service.cargarPelicula(id).getCategorias();
 	}
 	
-	@GetMapping(mostrarURL+"{id}/portada")
+	@GetMapping("{id}/portada")
 	public PortadaPelicula getPortada(@PathVariable Long id) {
 		return this.service.cargarPelicula(id).getPortada();
 	}
+	
+	public record Cantidad(long cantidad) {}
 	/*@GetMapping({mostrarURL+"/pagina/{numPag}/{nombre}/{formato}/{categoriaId}/{sinStock}/{ordenAcend}",
 		mostrarURL+"/pagina/{numPag}/{nombre}/{formato}/{sinStock}/{ordenAcend}",
 		mostrarURL+"/pagina/{numPag}/{nombre}/{categoriaId}/{sinStock}/{ordenAcend}",

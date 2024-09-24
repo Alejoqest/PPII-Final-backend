@@ -13,7 +13,6 @@ import com.ppii.proyectofinal.excepcion.RecursoNoEncontradoExcepcion;
 import com.ppii.proyectofinal.pelicula.Pelicula;
 import com.ppii.proyectofinal.pelicula.PeliculaRepository;
 import com.ppii.proyectofinal.usuario.Usuario;
-import com.ppii.proyectofinal.usuario.UsuarioRepository;
 
 @Service
 public class CarroFacturaService {
@@ -24,10 +23,6 @@ public class CarroFacturaService {
 	private FacturaRepository facturaRepositorio;
 	@Autowired
 	private PeliculaRepository peliculaRepositorio;
-	@Autowired
-	private UsuarioRepository userRepo;
-	/*@Autowired
-	private ElementoRepository elemCarroRepositorio;*/
 	
 	/*public CarroCompras obtenerCarro(Long usuarioId) {
 		CarroCompras carro = carroRepository.findByUsuarioId(usuarioId);
@@ -89,7 +84,7 @@ public class CarroFacturaService {
 		return carroRepository.findById(carro.getId()).orElseThrow(() -> new RecursoNoEncontradoExcepcion("Carro", "Id", Long.toString(carro.getId())));
 	}
 	
-	public Factura guardarFactura(Factura factura, String email) {
+	public Factura guardarFactura(Factura factura, Usuario usuario) {
 		if (factura.getDetalles().isEmpty()) throw new RecursoNoEncontradoExcepcion("Factura", "Detalles", "No vacio");
 		
 		List<DetalleFactura> hayError = factura.getDetalles().stream()
@@ -106,17 +101,15 @@ public class CarroFacturaService {
 				})
 				.collect(Collectors.toList());
 		
-		Usuario user = userRepo.findByEmail(email).orElseThrow();
+		if (usuario.getDinero() < factura.getPrecioTotal()) throw new RecursoInsuficienteExcepcion("Dinero", Double.toString(usuario.getDinero()), "mayor", Double.toString(factura.getPrecioTotal()));
 		
-		if (user.getDinero() < factura.getPrecioTotal()) throw new RecursoInsuficienteExcepcion("Dinero", Double.toString(user.getDinero()), "mayor", Double.toString(factura.getPrecioTotal()));
+		usuario.setDinero((usuario.getDinero() - factura.getPrecioTotal()));
 		
-		user.setDinero((user.getDinero() - factura.getPrecioTotal()));
-		
-		factura.setUsuario(user);
+		factura.setUsuario(usuario);
 		
 		peliculaRepositorio.saveAll(peliculasActualizadas);	
 		facturaRepositorio.save(factura);
-		return facturaRepositorio.findTopByUsuarioEmailOrderByIdDesc(email).orElseThrow(() -> new NullPointerException());
+		return facturaRepositorio.findTopByUsuarioEmailOrderByIdDesc(usuario.getEmail()).orElseThrow(() -> new NullPointerException());
 	}
 	
 	/*List<Pelicula> peliculasActualizadas = factura.getDetalles().stream()
@@ -127,8 +120,8 @@ public class CarroFacturaService {
 					)
 				.collect(Collectors.toList());*/
 	
-	public CarroCompras guardarFacturaDesdeCarro(Factura factura, CarroCompras carro, String email) {
-		this.guardarFactura(factura, email);
+	public CarroCompras guardarFacturaDesdeCarro(Factura factura, CarroCompras carro, Usuario usuario) {
+		this.guardarFactura(factura, usuario);
 		
 		carro = this.vaciarCarro(carro);
 		

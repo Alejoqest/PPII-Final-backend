@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class UsuarioContraseñaDTO {
 	private Long id;
-	private String Contrasena;
+	private String contrasena;
 	private String viejaContrasena;
 }
