@@ -47,6 +47,10 @@ public class PeliculaService {
 		return pRepo.findAll(paginaMuestra);
 	}
 	
+	public List<Pelicula> cargarUltimasPeliculas() {
+		return pRepo.findTop5ByOrderByIdDesc();
+	}
+	
 	public List<Pelicula> obtenerPaginaPeliculasParametrada(int numPag, String nombre, FormatoPelicula formato,
 			 Long categoriaId, boolean sinStock, boolean ordenId, boolean ordenAcend) {
 		Pageable paginaMuestra = PageRequest.of((numPag - 1), 16, (ordenId)?

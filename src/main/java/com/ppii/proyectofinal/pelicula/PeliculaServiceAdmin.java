@@ -147,7 +147,7 @@ public class PeliculaServiceAdmin implements ServiceInterface {
 	public void eliminarImagen(String imagenDir) {
 		if (imagenDir.contains(NOT_FOUND)) return;
 		
-		Path OLDFILEPATH = Paths.get(imagenDir);
+		Path OLDFILEPATH = Paths.get(DIR_PATH + imagenDir);
 		
 		try {
 			Files.delete(OLDFILEPATH);

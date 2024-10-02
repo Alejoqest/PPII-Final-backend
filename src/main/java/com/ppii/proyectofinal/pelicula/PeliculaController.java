@@ -71,6 +71,14 @@ public class PeliculaController {
 		return ResponseEntity.ok(new Cantidad(count));
 	}
 	
+	@GetMapping("ultimas")
+	public ResponseEntity<List<PeliculaBusquedaDTO>> getPeliculaUltimas() {
+		List<Pelicula> peliculas = service.cargarUltimasPeliculas();
+		return ResponseEntity.ok(peliculas.stream()
+				.map(p -> mapper.toBusqueda(p))
+				.toList());
+	}
+	
 	@GetMapping("{id}")
 	public PeliculaDetallesDTO getPeliculaDatos(@PathVariable Long id) {
 		Pelicula pelicula = this.service.cargarPelicula(id);

@@ -60,4 +60,8 @@ public class Usuario {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "carro_id", referencedColumnName = "id")
 	private CarroCompras carro;
+    
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "foto_id", referencedColumnName = "id")
+    private UsuarioFoto foto;
 }

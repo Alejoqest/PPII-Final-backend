@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.ppii.proyectofinal.excepcion.RecursoNoEncontradoExcepcion;
+
 @Service
 public class CategoriaService {
 	
@@ -19,19 +21,21 @@ public class CategoriaService {
 		return repository.findAll();
 	}
 	
-	public List<Categoria> buscarCategorias(String categorial, int numPag) {
+	public List<Categoria> buscarCategorias(String lista, int numPag) {
 		Pageable paginaMuestra = PageRequest.of((numPag - 1), 10);
 		
-		List<String> categoriasAnt = Stream.of(categorial.split(",", -1)).collect(Collectors.toList());
+		List<String> excepciones = Stream.of(lista.split(",", -1)).collect(Collectors.toList());
 		
-		String categoria = categoriasAnt.get((categoriasAnt.size() - 1));
+		String categoria = excepciones.get((excepciones.size() - 1));
 		
-		categoriasAnt.remove(categoria);
+		excepciones.remove(categoria);
 		
-		return repository.findAllByNombreContainingAndNombreNotIn(categoria, categoriasAnt, paginaMuestra);
+		return repository.findAllByNombreContainingAndNombreNotIn(categoria, excepciones, paginaMuestra);
 	}
 	
-	public void eliminarCategorias() {
+	public void eliminarCategorias(Long id) {
+		if (repository.existsById(id)) throw new RecursoNoEncontradoExcepcion("Categoria", "Id", Long.toString(id));
 		
+		repository.deleteById(id);
 	}
 }

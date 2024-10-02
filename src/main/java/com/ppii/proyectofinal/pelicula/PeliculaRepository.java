@@ -36,6 +36,8 @@ public interface PeliculaRepository extends JpaRepository<Pelicula, Long> {
 	
 	public List<Pelicula> findAllByNombreContaining(String nombre, Pageable pageable);
 	
+	public List<Pelicula> findTop5ByOrderByIdDesc();
+	
 	/*public List<Pelicula> findAllByNombreContainingAndStockGreaterThanEqual(String nombre, int stock, Pageable pageable);
 
 	public List<Pelicula> findAllByNombreContainingAndCategoriasIdAndStockGreaterThanEqual(String nombre, Long categoriaId, int stock, Pageable pageable);

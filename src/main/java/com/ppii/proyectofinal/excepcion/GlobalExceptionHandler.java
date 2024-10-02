@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -40,6 +42,13 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(ContraseñaEquivocadaExcepcion.class)
 	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
 	public ErrorResponse handleContraseñaEquivocadaExcepcion(ContraseñaEquivocadaExcepcion excepcion, WebRequest webRequest) {
+		ErrorResponse errorResponse = new ErrorResponse(excepcion.getMessage(), webRequest.getDescription(false));
+		return errorResponse;
+	}
+	
+	@ExceptionHandler(ExpiredJwtException.class)
+	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+	public ErrorResponse handleExpiredJwtException(ExpiredJwtException excepcion, WebRequest webRequest) {
 		ErrorResponse errorResponse = new ErrorResponse(excepcion.getMessage(), webRequest.getDescription(false));
 		return errorResponse;
 	}

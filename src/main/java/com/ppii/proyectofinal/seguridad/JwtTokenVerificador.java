@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,7 +47,11 @@ public class JwtTokenVerificador extends OncePerRequestFilter {
 						usuario.getAuthorities()
 						);
 				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+				try {
+					SecurityContextHolder.getContext().setAuthentication(authenticationToken);					
+				} catch (ExpiredJwtException e) {
+					throw e;
+				}
 			}
 		}
 		filterChain.doFilter(request, response);

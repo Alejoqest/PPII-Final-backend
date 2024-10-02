@@ -9,6 +9,7 @@ import com.ppii.proyectofinal.usuario.dto.UsuarioDatosDTO;
 public class UsuarioMapper {
 	public Usuario deDatosAUsuario(UsuarioDatosDTO d) {
 		Usuario usuario = Usuario.builder()
+				.id(d.getId())
 				.nombre(d.getNombre())
 				.apellido(d.getApellido())
 				.apodo(d.getApodo())
@@ -19,6 +20,13 @@ public class UsuarioMapper {
 				.dinero(d.getDinero())
 				.build();
 		return usuario;
+	}
+	
+	public Usuario deDatosDineroAUsuario(UsuarioDatosDTO d) {
+		return Usuario.builder()
+				.id(d.getId())
+				.dinero(d.getDinero())
+				.build();
 	}
 	
 	public UsuarioBusquedaDTO aBusqueda(Usuario u) {

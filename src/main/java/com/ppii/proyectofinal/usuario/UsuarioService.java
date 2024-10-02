@@ -1,21 +1,31 @@
 package com.ppii.proyectofinal.usuario;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ppii.proyectofinal.carrofactura.CarroCompras;
 import com.ppii.proyectofinal.excepcion.ContraseñaEquivocadaExcepcion;
 import com.ppii.proyectofinal.excepcion.RecursoNoEncontradoExcepcion;
 import com.ppii.proyectofinal.excepcion.RecursoYaExistenteExcepcion;
+import com.ppii.proyectofinal.service.ServiceInterface;
 
 @Service
-public class UsuarioService {
-
+public class UsuarioService implements ServiceInterface {
+	private static final String DIR_PATH = "C:/Users/Bangho/EPP/ProyectoFinal/proyecto-final/public/usuario/";
+	
+	private static final String DEFAULT = "0.jpg";
+	
 	@Autowired
 	private UsuarioRepository repo;
 	
@@ -45,9 +55,7 @@ public class UsuarioService {
 	}
 
 	public void registrarUsuario(Usuario intento) {
-		if (intento.getEmail() == null || repo.existsByEmail(intento.getEmail())) {
-			throw new RecursoYaExistenteExcepcion("Usuario", "email", intento.getEmail());
-		}
+		if (repo.existsByEmail(intento.getEmail())) throw new RecursoYaExistenteExcepcion("Usuario", "email", intento.getEmail());
 		
 		if (intento.getContraseña() == null) throw new NullPointerException("Falta contraseña");
 		
@@ -58,21 +66,22 @@ public class UsuarioService {
 				.precioTotal(0)
 				.build());
 		
+		intento.setFoto(UsuarioFoto.builder()
+				.nombreArchivo(DEFAULT)
+				.build());
+		
 		intento.setDinero(0);
 		
 		repo.save(intento);
 	}
 	
 	public Usuario actualizarUsuario(Usuario usuario) {
-		if (usuario.getId() == null || !repo.existsById(usuario.getId())) {
-			throw new RecursoNoEncontradoExcepcion("Usuario", "id", Long.toString(usuario.getId()));
-		}
+		if (usuario.getId() == null || !repo.existsById(usuario.getId())) 
+			throw new RecursoNoEncontradoExcepcion("Usuario", "id", (usuario.getId() != null)? Long.toString(usuario.getId()) : "0");
 		
 		Usuario oldInfo = this.cargarUsuarioPorId(usuario.getId());
 		
-		if (usuario.getContraseña() != null) {
-			usuario.setContraseña(this.cifrarContraseña(usuario.getContraseña()));
-		}
+		if (usuario.getContraseña() != null) usuario.setContraseña(this.cifrarContraseña(usuario.getContraseña()));
 		
 		if (!oldInfo.getEmail().equals(usuario.getEmail()) && repo.existsByEmail(usuario.getEmail())) 
 			throw new RecursoYaExistenteExcepcion("Usuario", "email", usuario.getEmail());
@@ -80,6 +89,20 @@ public class UsuarioService {
 		repo.save(usuario);
 		
 		return this.cargarUsuarioPorEmail(usuario.getEmail());
+	}
+	
+	public UsuarioFoto actulizarFoto(Usuario usuario, MultipartFile imagen) {
+		String FILENAME = this.agregarImagen(Long.toString(usuario.getId()), imagen);
+		
+		UsuarioFoto foto = usuario.getFoto();
+		
+		foto.setNombreArchivo(FILENAME);
+		
+		usuario.setFoto(foto);
+		
+		repo.save(usuario);
+		
+		return foto;
 	}
 	
 	public void iniciarSesion(Usuario intento) {
@@ -111,18 +134,60 @@ public class UsuarioService {
 		return this.cargarUsuarioPorEmail(usuario.getEmail());
 	}
 	
-	public Usuario ModificarDinero(Usuario usuario) {
+	public Usuario ModificarDinero(Long id, double dinero) {
+		Usuario usuario = repo.findById(id).orElseThrow(() -> new RecursoNoEncontradoExcepcion("Usuario", "id", Long.toString(id)));
+		
+		usuario.setDinero(dinero);
+		
 		repo.save(usuario);
-		return repo.findById(usuario.getId()).orElseThrow(() -> new RecursoNoEncontradoExcepcion("Usuario", "id", Long.toString(usuario.getId())));
+		
+		return usuario;
 	}
 	
 	public void eliminarUsuario(Long id) {
-		if (!repo.existsById(id)) throw new RecursoNoEncontradoExcepcion("Usuario", "id", Long.toString(id));
+		Usuario usuario = repo.findById(id).orElseThrow(() -> new RecursoNoEncontradoExcepcion("Usuario", "id", Long.toString(id)));	
+				
+		UsuarioFoto foto = usuario.getFoto();
+		
+		eliminarImagen(foto.getNombreArchivo());
+		
 		repo.deleteById(id);
 	}
 	
 	private String cifrarContraseña(String contraseña) {
 		return passEncoder.encode(contraseña);
+	}
+
+	@Override
+	public String agregarImagen(String nombre, MultipartFile imagen) {
+		String nombreArchivo = imagen.getOriginalFilename();
+		
+		String extension = Optional.ofNullable(nombreArchivo)
+				.filter(n -> n.contains("."))
+				.map(e -> e.substring(nombreArchivo.lastIndexOf(".") + 1))
+				.get();
+		
+		String FILEPATH = DIR_PATH + nombre + "." + extension;
+		
+		try {
+			Files.write(Paths.get(FILEPATH), imagen.getBytes());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return (nombre + "." + extension);
+	}
+
+	@Override
+	public void eliminarImagen(String imagenDir) {
+		if (imagenDir.contains(DEFAULT)) return;
+		
+		Path OLDFILEPATH = Paths.get(DIR_PATH + imagenDir);
+		
+		try {
+			Files.delete(OLDFILEPATH);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
