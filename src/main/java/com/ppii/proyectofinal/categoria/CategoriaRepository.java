@@ -12,7 +12,7 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 	
 	boolean existsByNombreIgnoreCase(String nombre);
 	
-	List<Categoria> findAllByNombreIgnoreCase(List<String> nombre);
+	Categoria findByNombreIgnoreCase(String nombre);
 
 	List<Categoria> findAllByNombreIgnoreCaseContaining(String nombre, Pageable pageable);
 	

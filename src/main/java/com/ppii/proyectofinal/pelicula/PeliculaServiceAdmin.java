@@ -113,7 +113,9 @@ public class PeliculaServiceAdmin implements ServiceInterface {
 		
 		categorias.addAll(encontrados);
 			
-		if (!categorias.isEmpty()) categorias = cRepository.findAllByNombreIgnoreCase(categorias.stream().map(e -> e.getNombre()).toList());
+		if (!categorias.isEmpty()) categorias = categorias.stream()
+				.map(e -> cRepository.findByNombreIgnoreCase(e.getNombre()))
+				.toList();
 		
 		categorias.addAll(sinId);
 		
