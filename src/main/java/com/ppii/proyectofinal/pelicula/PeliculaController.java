@@ -61,7 +61,7 @@ public class PeliculaController {
 					.toList();
 	}
 	
-	@GetMapping("contar")
+	@GetMapping("contar/")
 	public ResponseEntity<Cantidad> getPeliculaCount(
 			@RequestParam(required = false, defaultValue = "") String nombre, 
 			@RequestParam(required = false) FormatoPelicula formato, 

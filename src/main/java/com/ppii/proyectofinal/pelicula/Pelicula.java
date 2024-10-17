@@ -40,6 +40,8 @@ public class Pelicula {
 	
 	private double precio;
 	
+	private int año;
+	
 	@Column(columnDefinition = "TEXT")
 	private String descripcion;
 	

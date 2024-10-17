@@ -105,13 +105,15 @@ public class PeliculaServiceAdmin implements ServiceInterface {
 		
 		categorias.removeAll(sinId);
 		
-		sinId.removeAll(
-			sinId.stream()
-			.filter(c -> this.cRepository.existsByNombreIgnoreCase(c.getNombre()))
-			.toList()
-		);
+		List<Categoria> encontrados = sinId.stream()
+				.filter(c -> this.cRepository.existsByNombreIgnoreCase(c.getNombre()))
+				.collect(Collectors.toList());
+		
+		sinId.removeAll(encontrados);
+		
+		categorias.addAll(encontrados);
 			
-		if (!categorias.isEmpty()) categorias = cRepository.findAllById(categorias.stream().map(e -> e.getId()).toList());
+		if (!categorias.isEmpty()) categorias = cRepository.findAllByNombreIgnoreCase(categorias.stream().map(e -> e.getNombre()).toList());
 		
 		categorias.addAll(sinId);
 		

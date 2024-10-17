@@ -58,7 +58,7 @@ public class CarroFacturaMapper {
 		return CarroComprasDTO.builder()
 				.id(c.getId())
 				.precioTotal(c.getPrecioTotal())
-				.catidadDeElementos(c.getElementos().size())
+				.cantidadDeElementos(c.getElementos().size())
 				.build();
 	}
 	

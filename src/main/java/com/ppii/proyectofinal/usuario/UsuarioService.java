@@ -61,13 +61,13 @@ public class UsuarioService implements ServiceInterface {
 		
 		intento.setContraseña(this.cifrarContraseña(intento.getContraseña()));
 		
+		intento.setFoto(UsuarioFoto.builder()
+				.nombreArchivo(DEFAULT)
+				.build());
+		
 		intento.setCarro(CarroCompras.builder()
 				.usuario(intento)
 				.precioTotal(0)
-				.build());
-		
-		intento.setFoto(UsuarioFoto.builder()
-				.nombreArchivo(DEFAULT)
 				.build());
 		
 		intento.setDinero(0);
@@ -81,7 +81,8 @@ public class UsuarioService implements ServiceInterface {
 		
 		Usuario oldInfo = this.cargarUsuarioPorId(usuario.getId());
 		
-		if (usuario.getContraseña() != null) usuario.setContraseña(this.cifrarContraseña(usuario.getContraseña()));
+		if (usuario.getContraseña() != null) usuario.setContraseña(this.cifrarContraseña(usuario.getContraseña())); 
+			else usuario.setContraseña(oldInfo.getContraseña()); 
 		
 		if (!oldInfo.getEmail().equals(usuario.getEmail()) && repo.existsByEmail(usuario.getEmail())) 
 			throw new RecursoYaExistenteExcepcion("Usuario", "email", usuario.getEmail());

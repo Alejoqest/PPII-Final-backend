@@ -16,6 +16,7 @@ public class PeliculaMapper {
 				.nombre(entity.getNombre())
 				.stock(entity.getStock())
 				.precio(entity.getPrecio())
+				.año(entity.getAno())
 				.descripcion(entity.getDescripcion())
 				.formato(entity.getFormato())
 				.categorias(entity.getCategorias())
@@ -29,6 +30,7 @@ public class PeliculaMapper {
 				.nombre(entity.getNombre())
 				.precio(entity.getPrecio())
 				.formato(entity.getFormato())
+				.ano(entity.getAño())
 				.build();
 		return pelicula;
 	}
@@ -40,6 +42,7 @@ public class PeliculaMapper {
 				.formato(entity.getFormato())
 				.descripcion(entity.getDescripcion())
 				.precio(entity.getPrecio())
+				.ano(entity.getAño())
 				.stock(entity.getStock())
 				.build();
 		return pelicula;

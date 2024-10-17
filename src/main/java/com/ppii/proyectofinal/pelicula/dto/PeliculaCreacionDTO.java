@@ -15,6 +15,7 @@ public class PeliculaCreacionDTO {
 	private String nombre;
 	private int stock;
 	private double precio;
+	private int ano;
 	private String descripcion;
 	private FormatoPelicula formato;
 	private List<Categoria> categorias;

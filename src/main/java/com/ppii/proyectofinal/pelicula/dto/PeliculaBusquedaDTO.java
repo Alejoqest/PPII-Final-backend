@@ -15,5 +15,6 @@ public class PeliculaBusquedaDTO {
 	private long id;
 	private String nombre;
 	private double precio;
+	private int ano;
 	private FormatoPelicula formato;
 }

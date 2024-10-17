@@ -12,6 +12,7 @@ public class PeliculaDetallesDTO {
 	private String nombre;
 	private FormatoPelicula formato;
 	private String descripcion;
+	private int ano;
 	private double precio;
 	private int stock;
 }

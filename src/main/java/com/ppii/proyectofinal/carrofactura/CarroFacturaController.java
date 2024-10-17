@@ -81,7 +81,7 @@ public class CarroFacturaController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(mapper.aCarroComprasDTO(carro));
 	}
 	
-	@PostMapping(value = "facturas/nueva")
+	@PostMapping(value = "factura/nueva")
 	public ResponseEntity<FacturaDTO> postFactura(Principal principal, @RequestBody Factura factura) {
 		factura = carServicio.guardarFactura(factura, userServicio.cargarUsuarioPorEmail(principal.getName()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(mapper.aFacturaDTO(factura));

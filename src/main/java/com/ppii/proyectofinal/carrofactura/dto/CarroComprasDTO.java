@@ -8,5 +8,5 @@ import lombok.Data;
 public class CarroComprasDTO {
 	private Long id;
 	private double precioTotal;
-	private int catidadDeElementos;
+	private int cantidadDeElementos;
 }
